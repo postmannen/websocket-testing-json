@@ -85,6 +85,14 @@ func (s *server) socketHandler() http.HandlerFunc {
 			switch strMsg {
 			case "addButton":
 				//msg = []byte("<button>Test button</button>")
+				//Create a buffer to hold all the data in the template.
+				//Since bytes.Buffer is a writer we can use it as the
+				//destination when executing the template.
+				var tplData bytes.Buffer
+				tpl.ExecuteTemplate(&tplData, "buttonTemplate1", divID)
+				d := tplData.String()
+				msg = []byte(d)
+				divID++
 			case "input":
 				msg = []byte("<input placeholder='put something here'></input>")
 			case "addTpl":
@@ -93,6 +101,15 @@ func (s *server) socketHandler() http.HandlerFunc {
 				//destination when executing the template.
 				var tplData bytes.Buffer
 				tpl.ExecuteTemplate(&tplData, "socketTemplate1", divID)
+				d := tplData.String()
+				msg = []byte(d)
+				divID++
+			case "p":
+				//Create a buffer to hold all the data in the template.
+				//Since bytes.Buffer is a writer we can use it as the
+				//destination when executing the template.
+				var tplData bytes.Buffer
+				tpl.ExecuteTemplate(&tplData, "paragraphTemplate1", divID)
 				d := tplData.String()
 				msg = []byte(d)
 				divID++
