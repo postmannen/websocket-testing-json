@@ -51,7 +51,7 @@ func (s *server) socketHandler() http.HandlerFunc {
 	var err error
 
 	init.Do(func() {
-		tpl, err = template.ParseFiles("socketTemplates.html")
+		tpl, err = template.ParseFiles("socketTemplates.gohtml")
 		if err != nil {
 			log.Printf("error: ParseFiles : %v\n", err)
 		}
@@ -93,9 +93,9 @@ func (s *server) socketHandler() http.HandlerFunc {
 				d := tplData.String()
 				msg = []byte(d)
 				divID++
-			case "input":
+			case "addInput":
 				msg = []byte("<input placeholder='put something here'></input>")
-			case "addTpl":
+			case "addTemplate":
 				//Create a buffer to hold all the data in the template.
 				//Since bytes.Buffer is a writer we can use it as the
 				//destination when executing the template.
@@ -104,7 +104,7 @@ func (s *server) socketHandler() http.HandlerFunc {
 				d := tplData.String()
 				msg = []byte(d)
 				divID++
-			case "p":
+			case "addParagraph":
 				//Create a buffer to hold all the data in the template.
 				//Since bytes.Buffer is a writer we can use it as the
 				//destination when executing the template.
