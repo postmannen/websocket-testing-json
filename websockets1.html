@@ -27,6 +27,7 @@
         var output = document.getElementById("output");
         var socket = new WebSocket("ws://localhost:8080/echo");
 
+        //-----------------------Control of the socket-----------------------
         socket.onopen = function () {
             output.innerHTML += "status: connected\n";
         };
@@ -36,6 +37,12 @@
         socket.onmessage = function (serverEvent) {
             output.innerHTML += serverEvent.data;
         };
+
+        socket.onclose = function () {
+            output.innerHTML += "The socket is no longer open"
+        }
+
+        //--------Functions called based on the actions in the form----------
 
         //this is the function that is being called when clicking the 'send' button
         //for the text input field.
@@ -51,10 +58,7 @@
             socket.send("addButton")
         }
 
-        socket.onclose = function () {
-            output.innerHTML += "The socket is no longer open"
-        }
-
+        //The function called from the "delete element" buttons
         function deleteElement(v) {
             alert("deleting element with id = " + v)
             var e = document.getElementById(v)
