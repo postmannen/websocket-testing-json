@@ -36,14 +36,18 @@
             output.innerHTML += serverEvent.data;
         };
 
-        //this is the function that is being called in the onclick of button
+        //this is the function that is being called when clicking the 'send' button
+        //for the text input field.
         function send() {
             socket.send(input.value);
+            //set the input.value variable to null when done sending.
             input.value = "";
         }
 
+        //This is for when the used pressed the add button on top
         function addButton() {
             socket.send("<button>new button</button>")
+            socket.send("addButton")
         }
 
         socket.onclose = function () {

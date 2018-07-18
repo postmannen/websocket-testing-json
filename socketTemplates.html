@@ -9,4 +9,13 @@
     </pre>
     </div>
 </body>
+{{end}} {{define "buttonTemplate1"}}
+
+<body>
+    <div id="{{.}}">
+        <button>Button {{.}}</button>
+        <a href="javascript:deleteElement({{.}})">Delete elements</a>
+    </div>
+</body>
+
 {{end}}
