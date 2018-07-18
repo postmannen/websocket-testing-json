@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 	"text/template"
 
@@ -91,6 +92,10 @@ func (s *server) socketHandler() http.HandlerFunc {
 				var tplData bytes.Buffer
 				tpl.ExecuteTemplate(&tplData, "buttonTemplate1", divID)
 				d := tplData.String()
+				//New-lines between the html tags in the template source code
+				//is shown in the browser. Trimming awat the new-lines in each line
+				//in the template data.
+				d = strings.TrimPrefix(d, "\n")
 				msg = []byte(d)
 				divID++
 			case "addInput":
@@ -102,6 +107,10 @@ func (s *server) socketHandler() http.HandlerFunc {
 				var tplData bytes.Buffer
 				tpl.ExecuteTemplate(&tplData, "socketTemplate1", divID)
 				d := tplData.String()
+				//New-lines between the html tags in the template source code
+				//is shown in the browser. Trimming awat the new-lines in each line
+				//in the template data.
+				d = strings.TrimPrefix(d, "\n")
 				msg = []byte(d)
 				divID++
 			case "addParagraph":
@@ -111,6 +120,10 @@ func (s *server) socketHandler() http.HandlerFunc {
 				var tplData bytes.Buffer
 				tpl.ExecuteTemplate(&tplData, "paragraphTemplate1", divID)
 				d := tplData.String()
+				//New-lines between the html tags in the template source code
+				//is shown in the browser. Trimming awat the new-lines in each line
+				//in the template data.
+				d = strings.TrimPrefix(d, "\n")
 				msg = []byte(d)
 				divID++
 			default:
