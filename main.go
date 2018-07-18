@@ -20,6 +20,16 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+//server will hold all the information needed to run a server,
+//and data to be passed around and used by the handlers.
+type server struct {
+	address string
+}
+
+func newServer() *server {
+	return &server{":8080"}
+}
+
 //var upgrader = websocket.Upgrader{
 //	ReadBufferSize:  1024,
 //	WriteBufferSize: 1024,
@@ -31,7 +41,7 @@ import (
 //communication with the serside websocket.
 //This handler is used with all the other handlers if they open a
 //websocket on the client side.
-func socketHandler() http.HandlerFunc {
+func (s *server) socketHandler() http.HandlerFunc {
 	var upgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
@@ -101,7 +111,7 @@ func socketHandler() http.HandlerFunc {
 	}
 }
 
-func rootHandle() http.HandlerFunc {
+func (s *server) rootHandle() http.HandlerFunc {
 	var init sync.Once
 	var tpl *template.Template
 	var err error
@@ -119,28 +129,11 @@ func rootHandle() http.HandlerFunc {
 	}
 }
 
-func secondHandle() http.HandlerFunc {
-	var init sync.Once
-	var tpl *template.Template
-	var err error
-
-	init.Do(func() {
-		tpl, err = template.ParseFiles("websockets1.html")
-		if err != nil {
-			log.Printf("error: ParseFile : %v\n", err)
-		}
-	})
-
-	return func(w http.ResponseWriter, r *http.Request) {
-		tpl.ExecuteTemplate(w, "websocket", nil)
-	}
-}
-
 func main() {
-	http.HandleFunc("/echo", socketHandler())
-	http.HandleFunc("/", rootHandle())
-	http.HandleFunc("/second", secondHandle())
+	s := newServer()
+	http.HandleFunc("/echo", s.socketHandler())
+	http.HandleFunc("/", s.rootHandle())
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(s.address, nil)
 
 }
