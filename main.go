@@ -3,7 +3,7 @@ Test loading templates, and use them to be drawn via
 a websocket to the browser. The element that is made
 in the browser can then be deleted.
 The templates are being parsed normally but instead
-of executing the template to http.ResponseWrite, we
+of executing the template to http.ResponseWriter, we
 execute it to a bytes.Buffer which got a io.Writer,
 and we then send that buffer over the websocket.
 */
@@ -69,7 +69,7 @@ func (s *server) socketHandler() http.HandlerFunc {
 		divID := 0
 
 		for {
-			//read the message
+			//read the message from browser
 			msgType, msg, err := conn.ReadMessage()
 			if err != nil {
 				fmt.Println("error: websocket ReadMessage: ", err)
@@ -79,9 +79,8 @@ func (s *server) socketHandler() http.HandlerFunc {
 			//print message to console
 			fmt.Printf("Client=%v typed : %v \n", conn.RemoteAddr(), string(msg))
 
-			//Check if message from client is special,
-			//and change the response is special,
-			//by chaning the content of msg
+			//Check if the message from browser matches any of the predefined CASE
+			//claused below, and execute the the block for that CASE.
 			strMsg := string(msg)
 			switch strMsg {
 			case "button":
@@ -111,6 +110,9 @@ func (s *server) socketHandler() http.HandlerFunc {
 	}
 }
 
+//The rootHandle which is like a normal handle is responsible for
+//serving the actual visible root page to the browser, and also
+//contains the javascript to be run in the browser.
 func (s *server) rootHandle() http.HandlerFunc {
 	var init sync.Once
 	var tpl *template.Template
@@ -125,7 +127,6 @@ func (s *server) rootHandle() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		tpl.ExecuteTemplate(w, "websocket", nil)
-		fmt.Println(tpl)
 	}
 }
 
