@@ -83,8 +83,8 @@ func (s *server) socketHandler() http.HandlerFunc {
 			//claused below, and execute the the block for that CASE.
 			strMsg := string(msg)
 			switch strMsg {
-			case "button":
-				msg = []byte("<button>Test button</button>")
+			case "addButton":
+				//msg = []byte("<button>Test button</button>")
 			case "input":
 				msg = []byte("<input placeholder='put something here'></input>")
 			case "addTpl":
