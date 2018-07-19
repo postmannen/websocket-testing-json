@@ -25,10 +25,16 @@ import (
 //and data to be passed around and used by the handlers.
 type server struct {
 	address string
+	//templateFunction is a reference to know what html template to
+	//be used based on which msg comming in from the client browser.
+	templateFunction map[string]string
 }
 
 func newServer() *server {
-	return &server{":8080"}
+	return &server{
+		address:          ":8080",
+		templateFunction: make(map[string]string),
+	}
 }
 
 //var upgrader = websocket.Upgrader{
@@ -140,6 +146,10 @@ func (s *server) socketHandler() http.HandlerFunc {
 	}
 }
 
+func (s *server) chooseTemplateName(msg string) (name string) {
+	return
+}
+
 //The rootHandle which is like a normal handle is responsible for
 //serving the actual visible root page to the browser, and also
 //contains the javascript to be run in the browser.
@@ -162,6 +172,11 @@ func (s *server) rootHandle() http.HandlerFunc {
 
 func main() {
 	s := newServer()
+	s.templateFunction = map[string]string{
+		"addButton":    "buttonTemplate1",
+		"addTemplate":  "socketTemplate1",
+		"addParagraph": "paragraphTemplate1",
+	}
 	http.HandleFunc("/echo", s.socketHandler())
 	http.HandleFunc("/", s.rootHandle())
 
