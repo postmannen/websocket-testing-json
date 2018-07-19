@@ -35,7 +35,12 @@
         //here we are receiving messages from the server
         //the event is delivered to onmessage, and used in function as "serverEvent"
         socket.onmessage = function (serverEvent) {
-            output.innerHTML += serverEvent.data;
+            m = serverEvent.data
+            for (var i = 0; i < m.length; i++) {
+                console.log(m.charCodeAt(i));
+            }
+            //console.log(serverEvent.data)
+            output.innerHTML += m;
         };
 
         socket.onclose = function () {
@@ -57,7 +62,6 @@
             socket.send("<button>new button</button>")
             socket.send("addButton")
         }
-
 
         //The function called from the "delete element" buttons
         function deleteElement(v) {

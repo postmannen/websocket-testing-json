@@ -95,7 +95,7 @@ func (s *server) socketHandler() http.HandlerFunc {
 				//New-lines between the html tags in the template source code
 				//is shown in the browser. Trimming awat the new-lines in each line
 				//in the template data.
-				d = strings.TrimPrefix(d, "\n")
+				d = strings.TrimSpace(d)
 				msg = []byte(d)
 				divID++
 			case "addInput":
@@ -110,7 +110,7 @@ func (s *server) socketHandler() http.HandlerFunc {
 				//New-lines between the html tags in the template source code
 				//is shown in the browser. Trimming awat the new-lines in each line
 				//in the template data.
-				d = strings.TrimPrefix(d, "\n")
+				d = strings.TrimSpace(d)
 				msg = []byte(d)
 				divID++
 			case "addParagraph":
@@ -123,7 +123,7 @@ func (s *server) socketHandler() http.HandlerFunc {
 				//New-lines between the html tags in the template source code
 				//is shown in the browser. Trimming awat the new-lines in each line
 				//in the template data.
-				d = strings.TrimPrefix(d, "\n")
+				d = strings.TrimSpace(d)
 				msg = []byte(d)
 				divID++
 			default:
