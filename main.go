@@ -25,15 +25,18 @@ import (
 //and data to be passed around and used by the handlers.
 type server struct {
 	address string
-	//templateFunction is a reference to know what html template to
+	//msgToTemplate is a reference to know what html template to
 	//be used based on which msg comming in from the client browser.
-	templateFunction map[string]string
+	msgToTemplate map[msgCommand]templateName
 }
+
+type msgCommand string
+type templateName string
 
 func newServer() *server {
 	return &server{
-		address:          ":8080",
-		templateFunction: make(map[string]string),
+		address:       ":8080",
+		msgToTemplate: make(map[msgCommand]templateName),
 	}
 }
 
@@ -172,7 +175,7 @@ func (s *server) rootHandle() http.HandlerFunc {
 
 func main() {
 	s := newServer()
-	s.templateFunction = map[string]string{
+	s.msgToTemplate = map[string]string{
 		"addButton":    "buttonTemplate1",
 		"addTemplate":  "socketTemplate1",
 		"addParagraph": "paragraphTemplate1",
