@@ -32,7 +32,7 @@ type server struct {
 
 func newServer() *server {
 	return &server{
-		address:       ":8080",
+		address:       "localhost:8080",
 		msgToTemplate: make(map[string]string),
 	}
 }
@@ -153,6 +153,7 @@ func main() {
 	http.HandleFunc("/echo", s.socketHandler())
 	http.HandleFunc("/", s.rootHandle())
 
+	log.Printf("started the web server at %v\n", s.address)
 	http.ListenAndServe(s.address, nil)
 
 }
