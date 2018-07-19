@@ -92,21 +92,20 @@ func (s *server) socketHandler() http.HandlerFunc {
 			//to be printed out in the client browser.
 			strMsg := string(msg)
 			if strMsg != "" {
-				for k, v := range s.msgToTemplate {
-					if k == strMsg {
-						//Declare a bytes.Buffer to hold the data for the executed template.
-						var tplData bytes.Buffer
-						//tplData is a bytes.Buffer, which is a type io.Writer. Here we choose
-						//execute the template, but passing the output into tplData insted of
-						//'w'. Then we can take the data in tplData and send them over the socket.
-						tpl.ExecuteTemplate(&tplData, v, divID)
-						d := tplData.String()
-						//New-lines between the html tags in the template source code
-						//is shown in the browser. Trimming awat the new-lines in each line
-						//in the template data.
-						d = strings.TrimSpace(d)
-						msg = []byte(d)
-					}
+				tplName, ok := s.msgToTemplate[strMsg]
+				if ok {
+					//Declare a bytes.Buffer to hold the data for the executed template.
+					var tplData bytes.Buffer
+					//tplData is a bytes.Buffer, which is a type io.Writer. Here we choose
+					//execute the template, but passing the output into tplData insted of
+					//'w'. Then we can take the data in tplData and send them over the socket.
+					tpl.ExecuteTemplate(&tplData, tplName, divID)
+					d := tplData.String()
+					//New-lines between the html tags in the template source code
+					//is shown in the browser. Trimming awat the new-lines in each line
+					//in the template data.
+					d = strings.TrimSpace(d)
+					msg = []byte(d)
 				}
 				divID++
 			}
