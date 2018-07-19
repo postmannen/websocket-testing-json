@@ -175,7 +175,7 @@ func (s *server) rootHandle() http.HandlerFunc {
 
 func main() {
 	s := newServer()
-	s.msgToTemplate = map[string]string{
+	s.msgToTemplate = map[msgCommand]templateName{
 		"addButton":    "buttonTemplate1",
 		"addTemplate":  "socketTemplate1",
 		"addParagraph": "paragraphTemplate1",
