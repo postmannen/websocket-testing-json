@@ -8,19 +8,25 @@ the same line as the template "define" and "end" lines, or else
 they will put in an extra not wanted new-line.
 -->
 
-{{define "socketTemplate1"}}<div id="{{.}}">
-<h1>The header from the template !</h1>
-<p>Printed from the data taken from template</p>
-<a href="javascript:deleteElement({{.}})">Delete elements</a>
-</div>{{end}}
+{{define "socketTemplate1"}}
+    <div id="{{.}}">
+        <h1>The header from the template !</h1>
+        <p>Printed from the data taken from template</p>
+        <a href="javascript:deleteElement({{.}})">Delete elements</a>
+    </div>
+{{end}}
 <!---->
-{{define "buttonTemplate1"}}<div id="{{.}}">
+{{define "buttonTemplate1"}}
+<div id="{{.}}">
     <button>Button {{.}}</button>
     <a href="javascript:deleteElement({{.}})">Delete elements</a>
-</div>{{end}}
+</div>
+{{end}}
 <!---->
-{{define "paragraphTemplate1"}}<div id="{{.}}">
+{{define "paragraphTemplate1"}}
+<div id="{{.}}">
     <p>Paragraph {{.}}</p>
     <a href="javascript:deleteElement({{.}})">Delete elements</a>
-</div>{{end}}
+</div>
+{{end}}
 <!---->
