@@ -27,16 +27,13 @@ type server struct {
 	address string
 	//msgToTemplate is a reference to know what html template to
 	//be used based on which msg comming in from the client browser.
-	msgToTemplate map[msgCommand]templateName
+	msgToTemplate map[string]string
 }
-
-type msgCommand string
-type templateName string
 
 func newServer() *server {
 	return &server{
 		address:       ":8080",
-		msgToTemplate: make(map[msgCommand]templateName),
+		msgToTemplate: make(map[string]string),
 	}
 }
 
@@ -150,6 +147,7 @@ func (s *server) socketHandler() http.HandlerFunc {
 }
 
 func (s *server) chooseTemplateName(msg string) (name string) {
+
 	return
 }
 
@@ -175,7 +173,8 @@ func (s *server) rootHandle() http.HandlerFunc {
 
 func main() {
 	s := newServer()
-	s.msgToTemplate = map[msgCommand]templateName{
+	//create a map of all the msg to template mappings that will occur.
+	s.msgToTemplate = map[string]string{
 		"addButton":    "buttonTemplate1",
 		"addTemplate":  "socketTemplate1",
 		"addParagraph": "paragraphTemplate1",
