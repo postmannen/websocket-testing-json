@@ -15,13 +15,13 @@
     <button onclick="addButton()">add button</button>
     <p>Commands to use in the input field :</p>
     <ul>
-        <li>{"Argument":"addButton"}</li>
-        <li>{"Argument":"addInput"}</li>
-        <li>{"Argument":"addHeader"}</li>
-        <li>{"Argument":"addParagraph"}</li>
+        <li>{"Command":"executeTemplate","Argument":"addButton"}</li>
+        <li>{"Command":"executeTemplate","Argument":"addInput"}</li>
+        <li>{"Command":"executeTemplate","Argument":"addHeader"}</li>
+        <li>{"Command":"executeTemplate","Argument":"addParagraph"}</li>
     </ul>
     <pre id="output"></pre>
-
+    
     <script>
         var input = document.getElementById("input");
         var output = document.getElementById("output");
