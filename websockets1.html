@@ -61,18 +61,18 @@
 
         //--------Functions called based on the actions in the form----------
 
-        //this is the function that is being called when clicking the 'send' button
-        //for the text input field.
+        //Takes json data as input to function, and passes that input to the socket.
+        function socketSend(jsonData) {
+            socket.send(jsonData);
+        }
+
+        //Only used for the input field, along with the "send" button.
+        //When send button is pushed, this function is being called,
+        //the value of the input field with id=input is sendt to
+        //the socket.
         function send() {
             //input.value is the value of the input field with id=input
             socket.send(input.value);
-            //set the input.value variable to null when done sending.
-            input.value = "";
-        }
-
-        function socketSend(jsonData) {
-            //input.value is the value of the input field with id=input
-            socket.send(jsonData);
             //set the input.value variable to null when done sending.
             input.value = "";
         }
