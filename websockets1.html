@@ -15,10 +15,10 @@
     <button onclick="addButton()">add button</button>
     <p>Commands to use in the input field :</p>
     <ul>
-        <li>addButton</li>
-        <li>addInput</li>
-        <li>addTemplate</li>
-        <li>addParagraph</li>
+        <li>{"Argument":"addButton"}</li>
+        <li>{"Argument":"addInput"}</li>
+        <li>{"Argument":"addHeader"}</li>
+        <li>{"Argument":"addParagraph"}</li>
     </ul>
     <pre id="output"></pre>
 
@@ -38,7 +38,6 @@
             console.debug("WebSocket message received:", serverEvent);
             var m = JSON.parse(serverEvent.data)
             console.log(m.Argument)
-            //console.log(serverEvent.data)
             output.innerHTML += m.Argument;
         };
 
@@ -51,6 +50,7 @@
         //this is the function that is being called when clicking the 'send' button
         //for the text input field.
         function send() {
+            //input.value is the value of the input field with id=input
             socket.send(input.value);
             //set the input.value variable to null when done sending.
             input.value = "";

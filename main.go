@@ -93,16 +93,16 @@ func (s *server) socketHandler() http.HandlerFunc {
 			}
 
 			//print message to console
-			fmt.Printf("Client=%v typed : %v \n", conn.RemoteAddr(), msg)
+			fmt.Printf("Received on server from Client=%v : %v \n", conn.RemoteAddr(), msg)
+			fmt.Println("Content of msg.Command = ", msg.Command)
+			fmt.Println("Content of msg.Argument = ", msg.Argument)
 
 			//loop through the map and check if there is a key in the map that match with
 			//the msg comming in on the websocket from browser.
 			//If there is no match, whats in msg will be sendt directly back ovet the socket,
 			//to be printed out in the client browser.
 
-			fmt.Println("Message received on server : ", msg)
-
-			if msg.Argument != "" {
+			if msg.Command == "executeTemplate" && msg.Argument != "" {
 				tplName, ok := s.msgToTemplate[msg.Argument]
 				if ok {
 					//Declare a bytes.Buffer to hold the data for the executed template.
@@ -158,7 +158,7 @@ func main() {
 	//create a map of all the msg to template mappings that will occur.
 	s.msgToTemplate = map[string]string{
 		"addButton":    "buttonTemplate1",
-		"addTemplate":  "socketTemplate1",
+		"addHeader":    "socketTemplate1",
 		"addParagraph": "paragraphTemplate1",
 	}
 	http.HandleFunc("/echo", s.socketHandler())
