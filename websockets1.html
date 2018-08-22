@@ -35,12 +35,11 @@
         //here we are receiving messages from the server
         //the event is delivered to onmessage, and used in function as "serverEvent"
         socket.onmessage = function (serverEvent) {
-            m = serverEvent.data
-            for (var i = 0; i < m.length; i++) {
-                console.log(m.charCodeAt(i));
-            }
+            console.debug("WebSocket message received:", serverEvent);
+            var m = JSON.parse(serverEvent.data)
+            console.log(m.Argument)
             //console.log(serverEvent.data)
-            output.innerHTML += m;
+            output.innerHTML += m.Argument;
         };
 
         socket.onclose = function () {

@@ -21,6 +21,11 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type message struct {
+	Command  string
+	Argument string
+}
+
 //server will hold all the information needed to run a server,
 //and data to be passed around and used by the handlers.
 type server struct {
@@ -75,24 +80,30 @@ func (s *server) socketHandler() http.HandlerFunc {
 		//socket to be shown in the browser.
 		divID := 0
 
+		var msg *message
+
 		for {
 			//read the message from browser
-			msgType, msg, err := conn.ReadMessage()
+			//REMOVE: msgType, msg, err := conn.ReadMessage()
+			err := conn.ReadJSON(&msg)
+
 			if err != nil {
 				fmt.Println("error: websocket ReadMessage: ", err)
 				return
 			}
 
 			//print message to console
-			fmt.Printf("Client=%v typed : %v \n", conn.RemoteAddr(), string(msg))
+			fmt.Printf("Client=%v typed : %v \n", conn.RemoteAddr(), msg)
 
 			//loop through the map and check if there is a key in the map that match with
 			//the msg comming in on the websocket from browser.
 			//If there is no match, whats in msg will be sendt directly back ovet the socket,
 			//to be printed out in the client browser.
-			strMsg := string(msg)
-			if strMsg != "" {
-				tplName, ok := s.msgToTemplate[strMsg]
+
+			fmt.Println("Message received on server : ", msg)
+
+			if msg.Argument != "" {
+				tplName, ok := s.msgToTemplate[msg.Argument]
 				if ok {
 					//Declare a bytes.Buffer to hold the data for the executed template.
 					var tplData bytes.Buffer
@@ -105,13 +116,14 @@ func (s *server) socketHandler() http.HandlerFunc {
 					//is shown in the browser. Trimming awat the new-lines in each line
 					//in the template data.
 					d = strings.TrimSpace(d)
-					msg = []byte(d)
+					msg.Argument = d
 				}
 				divID++
 			}
 
 			//write message back on the socket to the browser
-			err = conn.WriteMessage(msgType, msg)
+			//err = conn.WriteMessage(msgType, msg)
+			err = conn.WriteJSON(msg)
 			if err != nil {
 				fmt.Println("error: WriteMessage failed :", err)
 				return
