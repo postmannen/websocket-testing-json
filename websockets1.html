@@ -15,10 +15,10 @@
     <button onclick="addButton()">add button</button>
     <p>Commands to use in the input field :</p>
     <ul>
-        <li>{"Command":"executeTemplate","Argument":"addButton"}</li>
-        <li>{"Command":"executeTemplate","Argument":"addInput"}</li>
-        <li>{"Command":"executeTemplate","Argument":"addHeader"}</li>
-        <li>{"Command":"executeTemplate","Argument":"addParagraph"}</li>
+        <button value='{"Command":"executeTemplate","Argument":"addButton"}'>{"Command":"executeTemplate","Argument":"addButton"}</button>
+        <button value='{"Command":"executeTemplate","Argument":"addInput"}'>{"Command":"executeTemplate","Argument":"addInput"}</button>
+        <button value='{"Command":"executeTemplate","Argument":"addHeader"}'>{"Command":"executeTemplate","Argument":"addHeader"}</button>
+        <button value='{"Command":"executeTemplate","Argument":"addParagraph"}'>{"Command":"executeTemplate","Argument":"addParagraph"}</button>
     </ul>
     <pre id="output"></pre>
     
@@ -26,6 +26,14 @@
         var input = document.getElementById("input");
         var output = document.getElementById("output");
         var socket = new WebSocket("ws://localhost:8080/echo");
+
+        //Add an event listener to catch the click of all buttons ????????
+        document.addEventListener("click",function (event) {
+            if (event.target !== event.currentTarget) {
+                var clickedValue = event.target.value;
+                socketSend(clickedValue)
+            }
+        });
 
         //-----------------------Control of the socket-----------------------
         socket.onopen = function () {
@@ -43,6 +51,7 @@
 
         socket.onclose = function () {
             output.innerHTML += "The socket is no longer open"
+            alert("The socket is no longer open, refresh page")
         }
 
         //--------Functions called based on the actions in the form----------
@@ -52,6 +61,13 @@
         function send() {
             //input.value is the value of the input field with id=input
             socket.send(input.value);
+            //set the input.value variable to null when done sending.
+            input.value = "";
+        }
+
+        function socketSend(jsonData) {
+            //input.value is the value of the input field with id=input
+            socket.send(jsonData);
             //set the input.value variable to null when done sending.
             input.value = "";
         }

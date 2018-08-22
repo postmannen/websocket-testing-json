@@ -78,7 +78,7 @@ func (s *server) socketHandler() http.HandlerFunc {
 
 		//divID is to keep track of the sections sendt to the
 		//socket to be shown in the browser.
-		divID := 0
+		divID := 1000
 
 		var msg *message
 
