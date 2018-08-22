@@ -15,10 +15,12 @@
     <button onclick="addButton()">add button</button>
     <p>Commands to use in the input field :</p>
     <ul>
-        <button value='{"Command":"executeTemplate","Argument":"addButton"}'>{"Command":"executeTemplate","Argument":"addButton"}</button>
-        <button value='{"Command":"executeTemplate","Argument":"addInput"}'>{"Command":"executeTemplate","Argument":"addInput"}</button>
-        <button value='{"Command":"executeTemplate","Argument":"addHeader"}'>{"Command":"executeTemplate","Argument":"addHeader"}</button>
-        <button value='{"Command":"executeTemplate","Argument":"addParagraph"}'>{"Command":"executeTemplate","Argument":"addParagraph"}</button>
+        <div id="buttons1">
+            <button id="1" value='{"Command":"executeTemplate","Argument":"addButton"}'>{"Command":"executeTemplate","Argument":"addButton"}</button>
+            <button id="2" value='{"Command":"executeTemplate","Argument":"addInput"}'>{"Command":"executeTemplate","Argument":"addInput"}</button>
+            <button id="3" value='{"Command":"executeTemplate","Argument":"addHeader"}'>{"Command":"executeTemplate","Argument":"addHeader"}</button>
+            <button id="4" value='{"Command":"executeTemplate","Argument":"addParagraph"}'>{"Command":"executeTemplate","Argument":"addParagraph"}</button>
+        </div>
     </ul>
     <pre id="output"></pre>
     
@@ -26,14 +28,6 @@
         var input = document.getElementById("input");
         var output = document.getElementById("output");
         var socket = new WebSocket("ws://localhost:8080/echo");
-
-        //Add an event listener to catch the click of all buttons ????????
-        document.addEventListener("click",function (event) {
-            if (event.target !== event.currentTarget) {
-                var clickedValue = event.target.value;
-                socketSend(clickedValue)
-            }
-        });
 
         //-----------------------Control of the socket-----------------------
         socket.onopen = function () {
@@ -53,6 +47,17 @@
             output.innerHTML += "The socket is no longer open"
             alert("The socket is no longer open, refresh page")
         }
+
+        //Add an event listener to catch the click of all buttons
+        var buttonDivElement = document.getElementById("buttons1")
+        buttonDivElement.addEventListener("click",function (event) {
+            if (event.currentTarget !== event.target) {
+                console.log("target = ", event.target)
+                var clickedValue = event.target.value;
+                console.log("clicked value = "+clickedValue)
+                socketSend(clickedValue)
+            }
+        });
 
         //--------Functions called based on the actions in the form----------
 
