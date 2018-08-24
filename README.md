@@ -11,7 +11,7 @@ The idea is:
 * The Json object containing the template (pure html code) is then put onto the socket and sendt to the client.
 * The client reads the socket and renders the html on the page in the browser.
 
-![alt text](https://github.com/postmannen/websocket-testing-json/blob/master/websocket-diagram.png)
+![alt text](https://github.com/postmannen/websocket-testing-json/doc/blob/master/websocket-diagram.png)
 
 ## Structure of JSON
 
