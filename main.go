@@ -32,13 +32,13 @@ type server struct {
 	address string
 	//msgToTemplate is a reference to know what html template to
 	//be used based on which msg comming in from the client browser.
-	msgToTemplate map[string]string
+	msgToTemplateMap map[string]string
 }
 
 func newServer() *server {
 	return &server{
-		address:       "localhost:8080",
-		msgToTemplate: make(map[string]string),
+		address:          "localhost:8080",
+		msgToTemplateMap: make(map[string]string),
 	}
 }
 
@@ -97,13 +97,14 @@ func (s *server) socketHandler() http.HandlerFunc {
 			fmt.Println("Content of msg.Command = ", msg.Command)
 			fmt.Println("Content of msg.Argument = ", msg.Argument)
 
-			//loop through the map and check if there is a key in the map that match with
+			//In the map that holds all the command to template mappings,
+			//check if there is a key in the map that match with
 			//the msg comming in on the websocket from browser.
-			//If there is no match, whats in msg will be sendt directly back ovet the socket,
+			//If there is no match, whats in msg will be sendt directly back over the socket,
 			//to be printed out in the client browser.
 
 			if msg.Command == "executeTemplate" && msg.Argument != "" {
-				tplName, ok := s.msgToTemplate[msg.Argument]
+				tplName, ok := s.msgToTemplateMap[msg.Argument]
 				if ok {
 					//Declare a bytes.Buffer to hold the data for the executed template.
 					var tplData bytes.Buffer
@@ -156,7 +157,8 @@ func (s *server) rootHandle() http.HandlerFunc {
 func main() {
 	s := newServer()
 	//create a map of all the msg to template mappings that will occur.
-	s.msgToTemplate = map[string]string{
+	//The key value is the one to send over a socket to backend.
+	s.msgToTemplateMap = map[string]string{
 		"addButton":    "buttonTemplate1",
 		"addHeader":    "socketTemplate1",
 		"addParagraph": "paragraphTemplate1",
