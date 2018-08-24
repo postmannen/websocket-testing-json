@@ -34,11 +34,13 @@
             output.innerHTML += "status: connected\n";
         };
 
-        //Here we are receiving messages from the server.
-        //onMessage is an eventListener, and the event is passed through onmessage
-        //to the callback function as an event object "e". We could name it wathever we want  
-        //(e is an abbreviation for event).
-        //The content of the event object e will then be accessible inside the callback function. 
+        //Here we are receiving messages from the server. 
+        //onMessage is an eventListener that is defined for the websocket.
+        //The event for the particular element (websocket) is then passed 
+        //through onmessage to the callback function as an event object "e". 
+        //We could name it wathever we want (e is just an abbreviation for event).
+        //The content of the event object e will then be accessible inside 
+        //the callback function. 
         socket.onmessage = function (e) {
             console.debug("WebSocket message received:", e);
             var m = JSON.parse(e.data)
