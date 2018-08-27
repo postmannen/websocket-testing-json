@@ -137,14 +137,16 @@ func (s *server) rootHandle() http.HandlerFunc {
 	var tpl *template.Template
 	var err error
 
-	init.Do(func() {
-		tpl, err = template.ParseFiles("websockets1.html")
-		if err != nil {
-			log.Printf("error: ParseFile : %v\n", err)
-		}
-	})
-
 	return func(w http.ResponseWriter, r *http.Request) {
+		init.Do(func() {
+			tpl, err = template.ParseFiles("websockets1.html")
+		})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Printf("error: ParseFile : %v\n", err)
+			return
+		}
+
 		tpl.ExecuteTemplate(w, "websocket", nil)
 	}
 }
