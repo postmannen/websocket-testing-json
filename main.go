@@ -152,6 +152,11 @@ func (s *server) rootHandle() http.HandlerFunc {
 	}
 }
 
+//readMap will use the mapfile package and check for updates in
+//the JSON file. If the file is changed convert the JSON read
+//to a map of string keys and string values.
+//If the file is in the wrong format return the current working
+//map.
 func (s *server) readMap() {
 	updates := make(chan mapfile.Update)
 	defer close(updates)
@@ -201,15 +206,8 @@ func printMap(m map[string]string) {
 
 func main() {
 	s := newServer()
-	//create a map of all the msg to template mappings that will occur.
+	//Read JSON file, and create a map of all the msg to template mappings that will occur.
 	//The key value is the one to send over a socket to backend.
-
-	//s.msgToTemplateMap = map[string]string{
-	//	"addButton":    "buttonTemplate1",
-	//	"addHeader":    "socketTemplate1",
-	//	"addParagraph": "paragraphTemplate1",
-	//}
-
 	go s.readMap()
 
 	fmt.Println("***", s.msgToTemplateMap)
