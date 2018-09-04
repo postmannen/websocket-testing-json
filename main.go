@@ -19,6 +19,7 @@ import (
 	"text/template"
 
 	"github.com/gorilla/websocket"
+	"github.com/postmannen/mapfile"
 )
 
 type message struct {
@@ -151,15 +152,67 @@ func (s *server) rootHandle() http.HandlerFunc {
 	}
 }
 
+func (s *server) readMap() {
+	updates := make(chan mapfile.Update)
+	defer close(updates)
+
+	fw, err := mapfile.New("commandToTemplate.json", updates)
+	if err != nil {
+		log.Println("Main: Failed to create new FileWatcher struct: ", err)
+	}
+
+	err = fw.Watch()
+	if err != nil {
+		log.Println("Main: Failed to Watch: ", err)
+	}
+
+	defer fw.Close()
+
+	for {
+		select {
+		case u := <-fw.Updates:
+			if u.Err == nil {
+				fmt.Println("No FileWatch Error: ", u)
+
+				s.msgToTemplateMap, err = fw.Convert(s.msgToTemplateMap)
+				if err != nil {
+					log.Println("Error: ", err)
+				}
+
+				printMap(s.msgToTemplateMap)
+			} else {
+				fmt.Println("FileWatch Error: ", u)
+			}
+		}
+	}
+}
+
+func printMap(m map[string]string) {
+
+	//Print out all the values for testing
+	fmt.Println("----------------------------------------------------------------")
+	fmt.Println("Content of the map unmarshaled from fileContent :")
+	for key, value := range m {
+		fmt.Println("key = ", key, "value = ", value)
+	}
+	fmt.Println("----------------------------------------------------------------")
+
+}
+
 func main() {
 	s := newServer()
 	//create a map of all the msg to template mappings that will occur.
 	//The key value is the one to send over a socket to backend.
-	s.msgToTemplateMap = map[string]string{
-		"addButton":    "buttonTemplate1",
-		"addHeader":    "socketTemplate1",
-		"addParagraph": "paragraphTemplate1",
-	}
+
+	//s.msgToTemplateMap = map[string]string{
+	//	"addButton":    "buttonTemplate1",
+	//	"addHeader":    "socketTemplate1",
+	//	"addParagraph": "paragraphTemplate1",
+	//}
+
+	go s.readMap()
+
+	fmt.Println("***", s.msgToTemplateMap)
 	http.HandleFunc("/echo", s.socketHandler())
 	http.HandleFunc("/", s.rootHandle())
 
