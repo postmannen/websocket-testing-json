@@ -1,5 +1,7 @@
 # websocket test using JSON
 
+## Execute a Go/Golang HTML template existing on Go backend server from JavaScript in Web browser
+
 The idea is:
 
 * The user do some action in the browser. For example ask the server for a Go Web Template to be drawn.
