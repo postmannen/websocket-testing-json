@@ -34,6 +34,7 @@ type server struct {
 	//msgToTemplate is a reference to know what html template to
 	//be used based on which msg comming in from the client browser.
 	msgToTemplateMap map[string]string
+	conn             *websocket.Conn
 }
 
 func newServer() *server {
@@ -67,7 +68,7 @@ func (s *server) socketHandler() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		//upgrade the handler to a websocket connection
-		conn, err := upgrader.Upgrade(w, r, nil)
+		s.conn, err = upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			fmt.Println("error: websocket Upgrade: ", err)
 		}
@@ -77,35 +78,26 @@ func (s *server) socketHandler() http.HandlerFunc {
 		divID := 1000
 
 		//msg is to hold the message read from the socket
-		var msg *message
+		//var msg message
 
 		//A channel to know when there is an update on
 		//the socket from a client browser
-		socketEvent := make(chan bool)
+		socketEvent := make(chan message)
 
 		//Read the message from browser.
 		//Make a function to check the socket, and if there is an event
-		go func(e chan bool) {
-			for {
-				err := conn.ReadJSON(&msg)
+		//return the json formatted message, on the socketEvent channel.
+		//Refactored this to a Go routine so the whole code doesn't block
+		//here waiting for something to arrive on the channel, so we can
+		//have multiple input channels.
+		go s.checkSocket(socketEvent)
 
-				if err != nil {
-					fmt.Println("error: websocket ReadMessage: ", err)
-					return
-				}
-
-				//print message to console
-				fmt.Printf("Received on server from Client=%v : %v \n", conn.RemoteAddr(), msg)
-				fmt.Println("Content of msg.Command = ", msg.Command)
-				fmt.Println("Content of msg.Argument = ", msg.Argument)
-
-				e <- true
-			}
-		}(socketEvent)
-
+		//Check the different event channels.
+		//If more inputs are added to the program, make the program send
+		//the input in it's own channel, and handle it here.
 		for {
 			select {
-			case <-socketEvent:
+			case msg := <-socketEvent:
 				//In the map that holds all the command to template mappings,
 				//check if there is a key in the map that match with
 				//the msg comming in on the websocket from browser.
@@ -132,7 +124,7 @@ func (s *server) socketHandler() http.HandlerFunc {
 
 				//write message back on the socket to the browser
 				//err = conn.WriteMessage(msgType, msg)
-				err = conn.WriteJSON(msg)
+				err = s.conn.WriteJSON(msg)
 				if err != nil {
 					fmt.Println("error: WriteMessage failed :", err)
 					return
@@ -140,6 +132,27 @@ func (s *server) socketHandler() http.HandlerFunc {
 			}
 
 		}
+	}
+}
+
+//Read the message from browser.
+//Make a function to check the socket, and if there is an event
+func (s *server) checkSocket(m chan message) {
+	for {
+		var msg message
+		err := s.conn.ReadJSON(&msg)
+
+		if err != nil {
+			fmt.Println("error: websocket ReadMessage: ", err)
+			return
+		}
+
+		//print message to console
+		fmt.Printf("Received on server from Client=%v : %v \n", s.conn.RemoteAddr(), msg)
+		fmt.Println("Content of msg.Command = ", msg.Command)
+		fmt.Println("Content of msg.Argument = ", msg.Argument)
+
+		m <- msg
 	}
 }
 
