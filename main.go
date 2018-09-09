@@ -76,54 +76,67 @@ func (s *server) socketHandler() http.HandlerFunc {
 		//socket to be shown in the browser.
 		divID := 1000
 
+		//msg is to hold the message read from the socket
 		var msg *message
 
-		for {
-			//read the message from browser
-			//REMOVE: msgType, msg, err := conn.ReadMessage()
-			err := conn.ReadJSON(&msg)
+		//A channel to know when there is an update on
+		//the socket from a client browser
+		socketEvent := make(chan bool)
 
-			if err != nil {
-				fmt.Println("error: websocket ReadMessage: ", err)
-				return
-			}
+		//Read the message from browser.
+		//Make a function to check the socket, and if there is an event
+		go func(e chan bool) {
+			for {
+				err := conn.ReadJSON(&msg)
 
-			//print message to console
-			fmt.Printf("Received on server from Client=%v : %v \n", conn.RemoteAddr(), msg)
-			fmt.Println("Content of msg.Command = ", msg.Command)
-			fmt.Println("Content of msg.Argument = ", msg.Argument)
-
-			//In the map that holds all the command to template mappings,
-			//check if there is a key in the map that match with
-			//the msg comming in on the websocket from browser.
-			//If there is no match, whats in msg will be sendt directly back over the socket,
-			//to be printed out in the client browser.
-
-			if msg.Command == "executeTemplate" && msg.Argument != "" {
-				tplName, ok := s.msgToTemplateMap[msg.Argument]
-				if ok {
-					//Declare a bytes.Buffer to hold the data for the executed template.
-					var tplData bytes.Buffer
-					//tplData is a bytes.Buffer, which is a type io.Writer. Here we choose
-					//execute the template, but passing the output into tplData insted of
-					//'w'. Then we can take the data in tplData and send them over the socket.
-					tpl.ExecuteTemplate(&tplData, tplName, divID)
-					d := tplData.String()
-					//New-lines between the html tags in the template source code
-					//is shown in the browser. Trimming awat the new-lines in each line
-					//in the template data.
-					d = strings.TrimSpace(d)
-					msg.Argument = d
+				if err != nil {
+					fmt.Println("error: websocket ReadMessage: ", err)
+					return
 				}
-				divID++
-			}
 
-			//write message back on the socket to the browser
-			//err = conn.WriteMessage(msgType, msg)
-			err = conn.WriteJSON(msg)
-			if err != nil {
-				fmt.Println("error: WriteMessage failed :", err)
-				return
+				//print message to console
+				fmt.Printf("Received on server from Client=%v : %v \n", conn.RemoteAddr(), msg)
+				fmt.Println("Content of msg.Command = ", msg.Command)
+				fmt.Println("Content of msg.Argument = ", msg.Argument)
+
+				e <- true
+			}
+		}(socketEvent)
+
+		for {
+			select {
+			case <-socketEvent:
+				//In the map that holds all the command to template mappings,
+				//check if there is a key in the map that match with
+				//the msg comming in on the websocket from browser.
+				//If there is no match, whats in msg will be sendt directly back over the socket,
+				//to be printed out in the client browser.
+				if msg.Command == "executeTemplate" && msg.Argument != "" {
+					tplName, ok := s.msgToTemplateMap[msg.Argument]
+					if ok {
+						//Declare a bytes.Buffer to hold the data for the executed template.
+						var tplData bytes.Buffer
+						//tplData is a bytes.Buffer, which is a type io.Writer. Here we choose
+						//execute the template, but passing the output into tplData insted of
+						//'w'. Then we can take the data in tplData and send them over the socket.
+						tpl.ExecuteTemplate(&tplData, tplName, divID)
+						d := tplData.String()
+						//New-lines between the html tags in the template source code
+						//is shown in the browser. Trimming awat the new-lines in each line
+						//in the template data.
+						d = strings.TrimSpace(d)
+						msg.Argument = d
+					}
+					divID++
+				}
+
+				//write message back on the socket to the browser
+				//err = conn.WriteMessage(msgType, msg)
+				err = conn.WriteJSON(msg)
+				if err != nil {
+					fmt.Println("error: WriteMessage failed :", err)
+					return
+				}
 			}
 
 		}
